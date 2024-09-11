@@ -1,4 +1,4 @@
-package com.cashai.cashaibackend.user;
+package com.cashai.cashaibackend.model;
 
 import jakarta.persistence.*;
 

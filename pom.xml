@@ -11,8 +11,8 @@
 	<groupId>com.cashai</groupId>
 	<artifactId>cashai-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>cashai-backend</name>
-	<description>CashAI backend</description>
+	<name>fintracker-backend</name>
+	<description>Personal finance tracker backend</description>
 	<properties>
 		<java.version>21</java.version>
 	</properties>

@@ -1,5 +1,7 @@
-package com.cashai.cashaibackend.user;
+package com.cashai.cashaibackend.config;
 
+import com.cashai.cashaibackend.model.User;
+import com.cashai.cashaibackend.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

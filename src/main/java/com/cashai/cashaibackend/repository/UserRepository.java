@@ -1,7 +1,7 @@
-package com.cashai.cashaibackend.user;
+package com.cashai.cashaibackend.repository;
 
+import com.cashai.cashaibackend.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

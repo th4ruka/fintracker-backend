@@ -1,11 +1,12 @@
-package com.cashai.cashaibackend.user;
+package com.cashai.cashaibackend.service;
 
+import com.cashai.cashaibackend.model.User;
+import com.cashai.cashaibackend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 /**

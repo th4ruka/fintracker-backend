@@ -1,5 +1,7 @@
-package com.cashai.cashaibackend.user;
+package com.cashai.cashaibackend.controller;
 
+import com.cashai.cashaibackend.model.User;
+import com.cashai.cashaibackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
