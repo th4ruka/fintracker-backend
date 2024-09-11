@@ -1,4 +1,8 @@
+<<<<<<<< HEAD:src/main/java/com/cashai/cashaibackend/model/User.java
 package com.cashai.cashaibackend.model;
+========
+package com.ceylabs.fintrackerbackend.model;
+>>>>>>>> 46a1152 (Refactor User components):src/main/java/com/ceylabs/fintrackerbackend/model/User.java
 
 import jakarta.persistence.*;
 

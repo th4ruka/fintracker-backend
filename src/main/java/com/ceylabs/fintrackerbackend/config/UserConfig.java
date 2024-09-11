@@ -1,7 +1,14 @@
+<<<<<<<< HEAD:src/main/java/com/cashai/cashaibackend/config/UserConfig.java
 package com.cashai.cashaibackend.config;
 
 import com.cashai.cashaibackend.model.User;
 import com.cashai.cashaibackend.repository.UserRepository;
+========
+package com.ceylabs.fintrackerbackend.config;
+
+import com.ceylabs.fintrackerbackend.model.User;
+import com.ceylabs.fintrackerbackend.repository.UserRepository;
+>>>>>>>> 46a1152 (Refactor User components):src/main/java/com/ceylabs/fintrackerbackend/config/UserConfig.java
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

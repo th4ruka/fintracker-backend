@@ -1,10 +1,10 @@
-package com.cashai.cashaibackend;
+package com.ceylabs.fintrackerbackend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class CashaiBackendApplicationTests {
+class FinTrackerBackendApplicationTests {
 
 	@Test
 	void contextLoads() {

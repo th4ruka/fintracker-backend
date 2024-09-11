@@ -1,7 +1,14 @@
+<<<<<<<< HEAD:src/main/java/com/cashai/cashaibackend/controller/UserController.java
 package com.cashai.cashaibackend.controller;
 
 import com.cashai.cashaibackend.model.User;
 import com.cashai.cashaibackend.service.UserService;
+========
+package com.ceylabs.fintrackerbackend.controller;
+
+import com.ceylabs.fintrackerbackend.model.User;
+import com.ceylabs.fintrackerbackend.service.UserService;
+>>>>>>>> 46a1152 (Refactor User components):src/main/java/com/ceylabs/fintrackerbackend/controller/UserController.java
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
