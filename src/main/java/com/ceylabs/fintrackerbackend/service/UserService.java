@@ -1,14 +1,8 @@
-<<<<<<<< HEAD:src/main/java/com/cashai/cashaibackend/service/UserService.java
-package com.cashai.cashaibackend.service;
 
-import com.cashai.cashaibackend.model.User;
-import com.cashai.cashaibackend.repository.UserRepository;
-========
 package com.ceylabs.fintrackerbackend.service;
 
 import com.ceylabs.fintrackerbackend.model.User;
 import com.ceylabs.fintrackerbackend.repository.UserRepository;
->>>>>>>> 46a1152 (Refactor User components):src/main/java/com/ceylabs/fintrackerbackend/service/UserService.java
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
