@@ -1,6 +1,7 @@
 
 package com.ceylabs.fintrackerbackend.service;
 
+import com.ceylabs.fintrackerbackend.exception.UserAlreadyExistsException;
 import com.ceylabs.fintrackerbackend.model.User;
 import com.ceylabs.fintrackerbackend.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -30,7 +31,7 @@ public class UserService {
     public void addNewUser(User user) {
         Optional<User> userByEmail = userRepository.findUserByEmail(user.getEmail());
         if (userByEmail.isPresent()){
-            throw new IllegalStateException("Email exists");
+            throw new UserAlreadyExistsException("Email: "+ user.getEmail() +" already exists!");
         }
         userRepository.save(user);
     }
