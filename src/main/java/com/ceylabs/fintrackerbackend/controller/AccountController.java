@@ -1,12 +1,16 @@
 package com.ceylabs.fintrackerbackend.controller;
 
+import com.ceylabs.fintrackerbackend.dto.AccountCreateRequest;
+import com.ceylabs.fintrackerbackend.dto.AccountResponse;
+import com.ceylabs.fintrackerbackend.dto.AccountUpdateRequest;
 import com.ceylabs.fintrackerbackend.model.Account;
 import com.ceylabs.fintrackerbackend.service.AccountService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,24 +22,33 @@ public class AccountController {
     private AccountService accountService;
 
     @GetMapping("/user/{userId}")
-    public List<Account> getAccountsByUser(@PathVariable Long userId) {
-        return accountService.getAccountsByUser(userId);
+    public ResponseEntity<List<AccountResponse>> getAccountsByUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(accountService.getAccountsByUser(userId));
     }
 
-    @PostMapping("/create")
-    public Account createAccount(@RequestParam String name,
-                                 @RequestParam BigDecimal balance,
-                                 @RequestParam Long userId) {
-        return accountService.createAccount(name, balance, userId);
+    @PostMapping
+    public ResponseEntity<AccountResponse> createAccount(@Valid @RequestBody AccountCreateRequest request) {
+        AccountResponse response = accountService.createAccount(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Account> getAccountById(@PathVariable Long id) {
+    public ResponseEntity<AccountResponse> getAccountById(@PathVariable Long id) {
         Optional<Account> account = accountService.getAccountById(id);
-        return account.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return account.map(accountService::mapEntityToResponse)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/delete/{id}")
+    @PutMapping("/{id}")
+    public ResponseEntity<AccountResponse> updateAccount(
+            @PathVariable Long id,
+            @Valid @RequestBody AccountUpdateRequest request) {
+        AccountResponse response = accountService.updateAccount(id, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
         accountService.deleteAccount(id);
         return ResponseEntity.noContent().build();

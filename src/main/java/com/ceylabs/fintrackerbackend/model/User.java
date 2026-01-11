@@ -10,8 +10,7 @@ import java.util.List;
 @Table
 public class User {
     @Id
-    @SequenceGenerator(name="user_sequence", sequenceName = "user_sequence")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_sequence")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String email;
