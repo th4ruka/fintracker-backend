@@ -23,6 +23,7 @@ public class AccountService {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
     private UserService userService;
 
     @Value("${app.defaults.currency}")
