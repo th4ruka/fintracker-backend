@@ -79,7 +79,7 @@ public interface TemplateRepository extends JpaRepository<Template, Long> {
     List<Template> findRecentTemplatesByUser(@Param("userId") Long userId);
 
     // Get most used templates (templates that have been used to create records)
-    @Query("SELECT t.templateId, COUNT(fr) as usage_count FROM FinancialRecord fr WHERE fr.templateId IS NOT NULL AND fr.user.id = :userId GROUP BY fr.templateId ORDER BY usage_count DESC")
+    @Query("SELECT fr.templateId, COUNT(fr) as usage_count FROM FinancialRecord fr WHERE fr.templateId IS NOT NULL AND fr.user.id = :userId GROUP BY fr.templateId ORDER BY usage_count DESC")
     List<Object[]> findMostUsedTemplatesByUser(@Param("userId") Long userId);
 
     // Count templates by user

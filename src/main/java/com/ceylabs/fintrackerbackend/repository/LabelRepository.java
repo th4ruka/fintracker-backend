@@ -32,17 +32,17 @@ public interface LabelRepository extends JpaRepository<Label, Long> {
     List<Label> findByUserIdAndColor(Long userId, String color);
 
     // Get labels used in financial records (labels that are actually being used)
-    @Query("SELECT DISTINCT l FROM Label l JOIN l.financialRecords fr WHERE l.user.id = :userId")
+    @Query("SELECT DISTINCT l FROM FinancialRecord fr JOIN fr.labels l WHERE l.user.id = :userId")
     List<Label> findUsedLabelsByUser(@Param("userId") Long userId);
 
     // Get unused labels (labels not attached to any record)
-    @Query("SELECT l FROM Label l WHERE l.user.id = :userId AND NOT EXISTS (SELECT 1 FROM FinancialRecord fr JOIN fr.labels lbl WHERE lbl.id = l.id)")
+    @Query("SELECT l FROM Label l WHERE l.user.id = :userId AND l.id NOT IN (SELECT DISTINCT lbl.id FROM FinancialRecord fr JOIN fr.labels lbl)")
     List<Label> findUnusedLabelsByUser(@Param("userId") Long userId);
 
     // Count labels by user
     Long countByUserId(Long userId);
 
     // Count used labels by user
-    @Query("SELECT COUNT(DISTINCT l) FROM Label l JOIN l.financialRecords fr WHERE l.user.id = :userId")
+    @Query("SELECT COUNT(DISTINCT l) FROM FinancialRecord fr JOIN fr.labels l WHERE l.user.id = :userId")
     Long countUsedLabelsByUser(@Param("userId") Long userId);
 }

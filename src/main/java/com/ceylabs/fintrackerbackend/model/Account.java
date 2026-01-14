@@ -75,6 +75,10 @@ public class Account {
     @Column(name = "overdraft_balance_type", length = 20, columnDefinition = "VARCHAR(20)")
     private OverdraftBalanceType overdraftBalanceType;
 
+    // Relationships
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private java.util.List<FinancialRecord> financialRecords = new java.util.ArrayList<>();
+
     // Constructors
     public Account() {}
 
@@ -217,6 +221,14 @@ public class Account {
 
     public void setOverdraftBalanceType(OverdraftBalanceType overdraftBalanceType) {
         this.overdraftBalanceType = overdraftBalanceType;
+    }
+
+    public java.util.List<FinancialRecord> getFinancialRecords() {
+        return financialRecords;
+    }
+
+    public void setFinancialRecords(java.util.List<FinancialRecord> financialRecords) {
+        this.financialRecords = financialRecords;
     }
 
     @PrePersist
