@@ -4,7 +4,8 @@ import com.ceylabs.fintrackerbackend.dto.AccountCreateRequest;
 import com.ceylabs.fintrackerbackend.dto.AccountResponse;
 import com.ceylabs.fintrackerbackend.dto.AccountUpdateRequest;
 import com.ceylabs.fintrackerbackend.enums.AccountType;
-import com.ceylabs.fintrackerbackend.enums.BalanceType;
+import com.ceylabs.fintrackerbackend.enums.CreditBalanceType;
+import com.ceylabs.fintrackerbackend.enums.OverdraftBalanceType;
 import com.ceylabs.fintrackerbackend.model.Account;
 import com.ceylabs.fintrackerbackend.model.User;
 import com.ceylabs.fintrackerbackend.repository.AccountRepository;
@@ -61,7 +62,7 @@ class AccountServiceTest {
         testAccount.setBalance(BigDecimal.valueOf(1000.00));
         testAccount.setInitialAmount(BigDecimal.valueOf(1000.00));
         testAccount.setColor("#FF0000");
-        testAccount.setAccountType(AccountType.BASIC);
+        testAccount.setAccountType(AccountType.GENERAL);
         testAccount.setCurrency("USD");
         testAccount.setExcludeFromStatistics(false);
         testAccount.setUser(testUser);
@@ -71,7 +72,7 @@ class AccountServiceTest {
         createRequest.setName("Savings Account");
         createRequest.setInitialAmount(BigDecimal.valueOf(5000.00));
         createRequest.setColor("#00FF00");
-        createRequest.setAccountType(AccountType.BASIC);
+        createRequest.setAccountType(AccountType.GENERAL);
         createRequest.setUserId(1L);
         createRequest.setExcludeFromStatistics(false);
 
@@ -89,7 +90,7 @@ class AccountServiceTest {
         account2.setName("Savings Account");
         account2.setBalance(BigDecimal.valueOf(5000.00));
         account2.setUser(testUser);
-        account2.setAccountType(AccountType.BASIC);
+        account2.setAccountType(AccountType.GENERAL);
 
         when(accountRepository.findByUserId(1L)).thenReturn(Arrays.asList(testAccount, account2));
 
@@ -144,7 +145,7 @@ class AccountServiceTest {
         createRequest.setAccountType(AccountType.CREDIT_ACCOUNT);
         createRequest.setCreditCardLimit(BigDecimal.valueOf(10000.00));
         createRequest.setCreditDueDayOfMonth(15);
-        createRequest.setCreditBalanceType(BalanceType.CREDIT);
+        createRequest.setCreditBalanceType(CreditBalanceType.AVAILABLE_CREDIT);
 
         Account creditAccount = new Account();
         creditAccount.setId(1L);
@@ -152,7 +153,7 @@ class AccountServiceTest {
         creditAccount.setAccountType(AccountType.CREDIT_ACCOUNT);
         creditAccount.setCreditCardLimit(BigDecimal.valueOf(10000.00));
         creditAccount.setCreditDueDayOfMonth(15);
-        creditAccount.setCreditBalanceType(BalanceType.CREDIT);
+        creditAccount.setCreditBalanceType(CreditBalanceType.AVAILABLE_CREDIT);
         creditAccount.setUser(testUser);
 
         when(userService.getUserById(1L)).thenReturn(Optional.of(testUser));
@@ -166,7 +167,7 @@ class AccountServiceTest {
         assertThat(result.getAccountType()).isEqualTo(AccountType.CREDIT_ACCOUNT);
         assertThat(result.getCreditCardLimit()).isEqualByComparingTo(BigDecimal.valueOf(10000.00));
         assertThat(result.getCreditDueDayOfMonth()).isEqualTo(15);
-        assertThat(result.getCreditBalanceType()).isEqualTo(BalanceType.CREDIT);
+        assertThat(result.getCreditBalanceType()).isEqualTo(CreditBalanceType.AVAILABLE_CREDIT);
         verify(userService, times(1)).getUserById(1L);
         verify(accountRepository, times(1)).save(any(Account.class));
     }
@@ -178,7 +179,7 @@ class AccountServiceTest {
         createRequest.setAccountType(AccountType.OVERDRAFT_ACCOUNT);
         createRequest.setOverdraftLimit(BigDecimal.valueOf(5000.00));
         createRequest.setOverdraftDueDayOfMonth(20);
-        createRequest.setOverdraftBalanceType(BalanceType.DEBIT);
+        createRequest.setOverdraftBalanceType(OverdraftBalanceType.ACTUAL_BALANCE);
 
         Account overdraftAccount = new Account();
         overdraftAccount.setId(1L);
@@ -186,7 +187,7 @@ class AccountServiceTest {
         overdraftAccount.setAccountType(AccountType.OVERDRAFT_ACCOUNT);
         overdraftAccount.setOverdraftLimit(BigDecimal.valueOf(5000.00));
         overdraftAccount.setOverdraftDueDayOfMonth(20);
-        overdraftAccount.setOverdraftBalanceType(BalanceType.DEBIT);
+        overdraftAccount.setOverdraftBalanceType(OverdraftBalanceType.ACTUAL_BALANCE);
         overdraftAccount.setUser(testUser);
 
         when(userService.getUserById(1L)).thenReturn(Optional.of(testUser));
@@ -200,7 +201,7 @@ class AccountServiceTest {
         assertThat(result.getAccountType()).isEqualTo(AccountType.OVERDRAFT_ACCOUNT);
         assertThat(result.getOverdraftLimit()).isEqualByComparingTo(BigDecimal.valueOf(5000.00));
         assertThat(result.getOverdraftDueDayOfMonth()).isEqualTo(20);
-        assertThat(result.getOverdraftBalanceType()).isEqualTo(BalanceType.DEBIT);
+        assertThat(result.getOverdraftBalanceType()).isEqualTo(OverdraftBalanceType.ACTUAL_BALANCE);
         verify(userService, times(1)).getUserById(1L);
         verify(accountRepository, times(1)).save(any(Account.class));
     }
@@ -325,7 +326,7 @@ class AccountServiceTest {
         testAccount.setAccountType(AccountType.CREDIT_ACCOUNT);
         updateRequest.setCreditCardLimit(BigDecimal.valueOf(15000.00));
         updateRequest.setCreditDueDayOfMonth(25);
-        updateRequest.setCreditBalanceType(BalanceType.CREDIT);
+        updateRequest.setCreditBalanceType(CreditBalanceType.CREDIT_BALANCE);
 
         when(accountRepository.findById(1L)).thenReturn(Optional.of(testAccount));
         when(accountRepository.save(any(Account.class))).thenReturn(testAccount);
@@ -336,7 +337,7 @@ class AccountServiceTest {
         // Then
         assertThat(testAccount.getCreditCardLimit()).isEqualByComparingTo(BigDecimal.valueOf(15000.00));
         assertThat(testAccount.getCreditDueDayOfMonth()).isEqualTo(25);
-        assertThat(testAccount.getCreditBalanceType()).isEqualTo(BalanceType.CREDIT);
+        assertThat(testAccount.getCreditBalanceType()).isEqualTo(CreditBalanceType.CREDIT_BALANCE);
         verify(accountRepository, times(1)).findById(1L);
         verify(accountRepository, times(1)).save(testAccount);
     }
@@ -348,7 +349,7 @@ class AccountServiceTest {
         testAccount.setAccountType(AccountType.OVERDRAFT_ACCOUNT);
         updateRequest.setOverdraftLimit(BigDecimal.valueOf(8000.00));
         updateRequest.setOverdraftDueDayOfMonth(10);
-        updateRequest.setOverdraftBalanceType(BalanceType.DEBIT);
+        updateRequest.setOverdraftBalanceType(OverdraftBalanceType.AVAILABLE_BALANCE);
 
         when(accountRepository.findById(1L)).thenReturn(Optional.of(testAccount));
         when(accountRepository.save(any(Account.class))).thenReturn(testAccount);
@@ -359,7 +360,7 @@ class AccountServiceTest {
         // Then
         assertThat(testAccount.getOverdraftLimit()).isEqualByComparingTo(BigDecimal.valueOf(8000.00));
         assertThat(testAccount.getOverdraftDueDayOfMonth()).isEqualTo(10);
-        assertThat(testAccount.getOverdraftBalanceType()).isEqualTo(BalanceType.DEBIT);
+        assertThat(testAccount.getOverdraftBalanceType()).isEqualTo(OverdraftBalanceType.AVAILABLE_BALANCE);
         verify(accountRepository, times(1)).findById(1L);
         verify(accountRepository, times(1)).save(testAccount);
     }
@@ -491,7 +492,7 @@ class AccountServiceTest {
         testAccount.setAccountType(AccountType.CREDIT_ACCOUNT);
         testAccount.setCreditCardLimit(BigDecimal.valueOf(10000.00));
         testAccount.setCreditDueDayOfMonth(15);
-        testAccount.setCreditBalanceType(BalanceType.CREDIT);
+        testAccount.setCreditBalanceType(CreditBalanceType.AVAILABLE_CREDIT);
 
         // When
         AccountResponse result = accountService.mapEntityToResponse(testAccount);
@@ -500,7 +501,7 @@ class AccountServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getCreditCardLimit()).isEqualByComparingTo(BigDecimal.valueOf(10000.00));
         assertThat(result.getCreditDueDayOfMonth()).isEqualTo(15);
-        assertThat(result.getCreditBalanceType()).isEqualTo(BalanceType.CREDIT);
+        assertThat(result.getCreditBalanceType()).isEqualTo(CreditBalanceType.AVAILABLE_CREDIT);
     }
 
     @Test
@@ -510,7 +511,7 @@ class AccountServiceTest {
         testAccount.setAccountType(AccountType.OVERDRAFT_ACCOUNT);
         testAccount.setOverdraftLimit(BigDecimal.valueOf(5000.00));
         testAccount.setOverdraftDueDayOfMonth(20);
-        testAccount.setOverdraftBalanceType(BalanceType.DEBIT);
+        testAccount.setOverdraftBalanceType(OverdraftBalanceType.ACTUAL_BALANCE);
 
         // When
         AccountResponse result = accountService.mapEntityToResponse(testAccount);
@@ -519,6 +520,6 @@ class AccountServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getOverdraftLimit()).isEqualByComparingTo(BigDecimal.valueOf(5000.00));
         assertThat(result.getOverdraftDueDayOfMonth()).isEqualTo(20);
-        assertThat(result.getOverdraftBalanceType()).isEqualTo(BalanceType.DEBIT);
+        assertThat(result.getOverdraftBalanceType()).isEqualTo(OverdraftBalanceType.ACTUAL_BALANCE);
     }
 }
