@@ -44,10 +44,8 @@ public class FinancialRecordService {
     @Transactional
     public FinancialRecordResponse createRecord(FinancialRecordCreateRequest request) {
         // Validate user exists
-        User user = userService.getUserById(request.getUserId());
-        if (user == null) {
-            throw new IllegalStateException("User with ID " + request.getUserId() + " does not exist");
-        }
+        User user = userService.getUserById(request.getUserId())
+                .orElseThrow(() -> new IllegalStateException("User with ID " + request.getUserId() + " does not exist"));
 
         // Validate account exists
         Account account = accountRepository.findById(request.getAccountId())

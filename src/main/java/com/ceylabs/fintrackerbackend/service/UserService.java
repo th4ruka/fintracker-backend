@@ -1,19 +1,24 @@
 
 package com.ceylabs.fintrackerbackend.service;
 
+import com.ceylabs.fintrackerbackend.dto.UserCreateRequest;
+import com.ceylabs.fintrackerbackend.dto.UserResponse;
+import com.ceylabs.fintrackerbackend.dto.UserUpdateRequest;
 import com.ceylabs.fintrackerbackend.model.User;
 import com.ceylabs.fintrackerbackend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Service Layer
  */
-//@Component //exactly same as service
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -23,24 +28,29 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<User> getUsers(){
-        return userRepository.findAll();
+    public List<UserResponse> getUsers(){
+        return userRepository.findAll().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 
-    public User getUserById(Long id){
-        if(userRepository.findById(id).isPresent()){
-            return  userRepository.findById(id).get();
-        }else {
-            return null;
-        }
+    public Optional<User> getUserById(Long id){
+        return userRepository.findById(id);
     }
 
-    public void addNewUser(User user) {
-        Optional<User> userByEmail = userRepository.findUserByEmail(user.getEmail());
+    public UserResponse createUser(UserCreateRequest request) {
+        Optional<User> userByEmail = userRepository.findUserByEmail(request.getEmail());
         if (userByEmail.isPresent()){
-            throw new IllegalStateException("Email exists");
+            throw new IllegalStateException("Email already exists");
         }
-        userRepository.save(user);
+
+        User user = new User();
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setDob(request.getDob());
+
+        User savedUser = userRepository.save(user);
+        return mapToResponse(savedUser);
     }
 
     public void deleteUser(Long userId) {
@@ -51,41 +61,42 @@ public class UserService {
         userRepository.deleteById(userId);
     }
 
-    @Transactional //no need to implement jpa query
-    public void updateUser(Long userId, String name, String email) {
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(()->new IllegalStateException(
-//                        "User with id: "+userId+" doesn't exist."
-//                ));
+    @Transactional
+    public UserResponse updateUser(Long userId, UserUpdateRequest request) {
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalStateException("User with id: " + userId + " doesn't exist."));
 
-//        if(name != null && name.length() > 0 &&
-//        !Objects.equals(user.getName(), name)){
-//            user.setName(name);
-//            userRepository.save(user);
-//            System.out.println("Modified name");
-//        }
-//
-//        if(email != null && email.length() > 0 &&
-//                !Objects.equals(user.getEmail(), email)){
-//            Optional<User> userOptional = userRepository.findUserByEmail(email);
-//            if(userOptional.isPresent()){
-//                throw new IllegalStateException("Email already exists.");
-//            }
-//            user.setEmail(email);
-//            userRepository.save(user);
-//            System.out.println("Modified email");
-//
-//        }
-
-        Optional<User> optinalEntity = userRepository.findById(userId);
-
-        if(optinalEntity.isPresent()){
-            User existingUser = optinalEntity.get();
-            if(name != null) existingUser.setName(name);
-            if(email != null) existingUser.setEmail(email);
-            User savedUser = userRepository.save(existingUser);
-        }else{
-            throw new IllegalStateException("User with id: "+userId+" doesn't exist.");
+        if(request.getName() != null && !request.getName().isEmpty()) {
+            existingUser.setName(request.getName());
         }
+
+        if(request.getEmail() != null && !request.getEmail().isEmpty()) {
+            Optional<User> userWithEmail = userRepository.findUserByEmail(request.getEmail());
+            if(userWithEmail.isPresent() && !userWithEmail.get().getId().equals(userId)){
+                throw new IllegalStateException("Email already exists.");
+            }
+            existingUser.setEmail(request.getEmail());
+        }
+
+        if(request.getDob() != null) {
+            existingUser.setDob(request.getDob());
+        }
+
+        User savedUser = userRepository.save(existingUser);
+        return mapToResponse(savedUser);
+    }
+
+    public UserResponse mapToResponse(User user) {
+        UserResponse response = new UserResponse();
+        response.setId(user.getId());
+        response.setName(user.getName());
+        response.setEmail(user.getEmail());
+        response.setDob(user.getDob());
+
+        if (user.getDob() != null) {
+            response.setAge(Period.between(user.getDob(), LocalDate.now()).getYears());
+        }
+
+        return response;
     }
 }
