@@ -95,6 +95,8 @@ public class UserService {
 
         if (user.getDob() != null) {
             response.setAge(Period.between(user.getDob(), LocalDate.now()).getYears());
+        } else {
+            response.setAge(0);
         }
 
         return response;
