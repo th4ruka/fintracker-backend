@@ -27,6 +27,14 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public User getUserById(Long id){
+        if(userRepository.findById(id).isPresent()){
+            return  userRepository.findById(id).get();
+        }else {
+            return null;
+        }
+    }
+
     public void addNewUser(User user) {
         Optional<User> userByEmail = userRepository.findUserByEmail(user.getEmail());
         if (userByEmail.isPresent()){

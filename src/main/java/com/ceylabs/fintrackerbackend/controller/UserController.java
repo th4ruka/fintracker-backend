@@ -15,7 +15,6 @@ public class UserController {
 
     @Autowired
     public UserController(UserService userService) {
-//        this.userService = new UserService(); //no need to do this if @Autowired is used
         this.userService = userService;
     }
 
