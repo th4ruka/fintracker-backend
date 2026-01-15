@@ -36,10 +36,9 @@ public class AccountService {
     }
 
     public AccountResponse createAccount(AccountCreateRequest request) {
-        User user = userService.getUserById(request.getUserId());
-        if (user == null) {
-            throw new IllegalStateException("User with ID " + request.getUserId() + " does not exist");
-        }
+        // Validate user exists
+        User user = userService.getUserById(request.getUserId())
+                .orElseThrow(() -> new IllegalStateException("User with ID " + request.getUserId() + " does not exist"));
 
         Account account = mapCreateRequestToEntity(request, user);
         Account savedAccount = accountRepository.save(account);

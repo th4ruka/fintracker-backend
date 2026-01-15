@@ -27,10 +27,8 @@ public class CategoryService {
     @Transactional
     public CategoryResponse createCategory(CategoryCreateRequest request) {
         // Validate user exists
-        User user = userService.getUserById(request.getUserId());
-        if (user == null) {
-            throw new IllegalStateException("User with ID " + request.getUserId() + " does not exist");
-        }
+        User user = userService.getUserById(request.getUserId())
+                .orElseThrow(() -> new IllegalStateException("User with ID " + request.getUserId() + " does not exist"));
 
         // Check for duplicate category name for this user
         if (categoryRepository.existsByNameAndUserId(request.getName(), request.getUserId())) {
