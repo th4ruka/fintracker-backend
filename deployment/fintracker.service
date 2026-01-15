@@ -1,0 +1,46 @@
+[Unit]
+Description=Fin Tracker Backend Spring Boot Application
+After=syslog.target network.target mysql.service
+Wants=mysql.service
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+
+# Working directory
+WorkingDirectory=/opt/fintracker/fin-tracker-backend
+
+# Environment variables from file
+EnvironmentFile=/opt/fintracker/.env
+
+# Set Spring datasource URL from env variables
+Environment="SPRING_DATASOURCE_URL=jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}"
+Environment="SPRING_DATASOURCE_USERNAME=${DB_USERNAME}"
+Environment="SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}"
+
+# Java executable and JAR file
+ExecStart=/usr/bin/java ${JAVA_OPTS} -jar /opt/fintracker/fin-tracker-backend/target/fintracker-backend-0.0.1-SNAPSHOT.jar
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=fintracker
+
+# Restart policy
+Restart=always
+RestartSec=10
+StartLimitInterval=200
+StartLimitBurst=5
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+
+# Resource limits (adjust based on available RAM)
+# For 1GB RAM instance, limit to 800MB
+MemoryLimit=800M
+MemoryHigh=700M
+
+[Install]
+WantedBy=multi-user.target
