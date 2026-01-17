@@ -317,7 +317,7 @@ The API uses standardized error responses through `GlobalExceptionHandler`:
 
 ## License
 
-[Specify your license here]
+Copyright © 2026 CEY Labs. All rights reserved.
 
 ## Contact
 
