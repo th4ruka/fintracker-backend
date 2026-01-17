@@ -318,7 +318,3 @@ The API uses standardized error responses through `GlobalExceptionHandler`:
 ## License
 
 Copyright © 2026 CEY Labs. All rights reserved.
-
-## Contact
-
-[Add contact information or links to issue tracker]
