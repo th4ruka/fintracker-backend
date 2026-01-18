@@ -20,3 +20,8 @@ spring:
 app:
   defaults:
     currency: ${APP_DEFAULT_CURRENCY:LKR}
+
+jwt:
+  secret: ${JWT_SECRET:YourSuperSecretKeyForJWTTokenGenerationMustBeAtLeast256BitsLongToWorkWithHS256Algorithm}
+  access-token-expiration: 900000  # 15 minutes in milliseconds
+  refresh-token-expiration: 604800000  # 7 days in milliseconds
