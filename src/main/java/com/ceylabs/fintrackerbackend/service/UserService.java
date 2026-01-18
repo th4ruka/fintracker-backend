@@ -8,12 +8,14 @@ import com.ceylabs.fintrackerbackend.model.User;
 import com.ceylabs.fintrackerbackend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -22,10 +24,12 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<UserResponse> getUsers(){
@@ -38,6 +42,11 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    /**
+     * Creates a user without authentication.
+     * @deprecated Use /api/auth/register endpoint instead for proper authentication
+     */
+    @Deprecated
     public UserResponse createUser(UserCreateRequest request) {
         Optional<User> userByEmail = userRepository.findUserByEmail(request.getEmail());
         if (userByEmail.isPresent()){
@@ -48,6 +57,10 @@ public class UserService {
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setDob(request.getDob());
+        // Set a random unusable password for backward compatibility
+        // Users created this way cannot login and should use /api/auth/register instead
+        user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
+        user.setRoles("USER");
 
         User savedUser = userRepository.save(user);
         return mapToResponse(savedUser);

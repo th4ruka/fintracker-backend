@@ -4,11 +4,13 @@ import com.ceylabs.fintrackerbackend.dto.CategoryCreateRequest;
 import com.ceylabs.fintrackerbackend.dto.CategoryResponse;
 import com.ceylabs.fintrackerbackend.enums.CategoryType;
 import com.ceylabs.fintrackerbackend.model.Category;
+import com.ceylabs.fintrackerbackend.security.CustomUserDetails;
 import com.ceylabs.fintrackerbackend.service.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,72 +23,139 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    // Create a new category
+    /**
+     * Create a new category for the authenticated user
+     */
     @PostMapping
-    public ResponseEntity<CategoryResponse> createCategory(@Valid @RequestBody CategoryCreateRequest request) {
+    public ResponseEntity<CategoryResponse> createCategory(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody CategoryCreateRequest request) {
+        // Override userId from request with authenticated user's ID for security
+        request.setUserId(userDetails.getId());
         CategoryResponse response = categoryService.createCategory(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // Get all accessible categories by user (system defaults + user's own)
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<CategoryResponse>> getAccessibleCategoriesByUser(@PathVariable Long userId) {
-        List<CategoryResponse> categories = categoryService.getAccessibleCategoriesByUser(userId);
+    /**
+     * Get all accessible categories for the authenticated user (system defaults + user's own)
+     */
+    @GetMapping
+    public ResponseEntity<List<CategoryResponse>> getAccessibleCategories(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        List<CategoryResponse> categories = categoryService.getAccessibleCategoriesByUser(userDetails.getId());
         return ResponseEntity.ok(categories);
     }
 
-    // Get a specific category by ID
+    /**
+     * Get a specific category by ID (with ownership verification)
+     */
     @GetMapping("/{id}")
-    public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Long id) {
+    public ResponseEntity<CategoryResponse> getCategoryById(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long id) {
         Optional<Category> category = categoryService.getCategoryById(id);
-        return category.map(categoryService::mapToResponse)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+
+        if (category.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Verify ownership: category must be system default (user is null) or belong to authenticated user
+        if (category.get().getUser() != null &&
+            !category.get().getUser().getId().equals(userDetails.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return ResponseEntity.ok(categoryService.mapToResponse(category.get()));
     }
 
-    // Update a category
+    /**
+     * Update a category (with ownership verification)
+     * Users can only update their own categories, not system defaults
+     */
     @PutMapping("/{id}")
     public ResponseEntity<CategoryResponse> updateCategory(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long id,
             @Valid @RequestBody CategoryCreateRequest request) {
+        Optional<Category> category = categoryService.getCategoryById(id);
+
+        if (category.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Verify ownership: can only update user's own categories (not system defaults)
+        if (category.get().getUser() == null ||
+            !category.get().getUser().getId().equals(userDetails.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         CategoryResponse response = categoryService.updateCategory(id, request);
         return ResponseEntity.ok(response);
     }
 
-    // Delete a category
+    /**
+     * Delete a category (with ownership verification)
+     * Users can only delete their own categories, not system defaults
+     */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCategory(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long id) {
+        Optional<Category> category = categoryService.getCategoryById(id);
+
+        if (category.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Verify ownership: can only delete user's own categories (not system defaults)
+        if (category.get().getUser() == null ||
+            !category.get().getUser().getId().equals(userDetails.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }
 
-    // Get categories by user and type
-    @GetMapping("/user/{userId}/type/{categoryType}")
-    public ResponseEntity<List<CategoryResponse>> getCategoriesByUserAndType(
-            @PathVariable Long userId,
+    /**
+     * Get categories by type for the authenticated user
+     */
+    @GetMapping("/type/{categoryType}")
+    public ResponseEntity<List<CategoryResponse>> getCategoriesByType(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable CategoryType categoryType) {
-        List<CategoryResponse> categories = categoryService.getAccessibleCategoriesByUserAndType(userId, categoryType);
+        List<CategoryResponse> categories = categoryService.getAccessibleCategoriesByUserAndType(
+                userDetails.getId(), categoryType);
         return ResponseEntity.ok(categories);
     }
 
-    // Get expense categories by user
-    @GetMapping("/user/{userId}/expense")
-    public ResponseEntity<List<CategoryResponse>> getExpenseCategories(@PathVariable Long userId) {
-        List<CategoryResponse> categories = categoryService.getExpenseCategoriesByUser(userId);
+    /**
+     * Get expense categories for the authenticated user
+     */
+    @GetMapping("/expense")
+    public ResponseEntity<List<CategoryResponse>> getExpenseCategories(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        List<CategoryResponse> categories = categoryService.getExpenseCategoriesByUser(userDetails.getId());
         return ResponseEntity.ok(categories);
     }
 
-    // Get income categories by user
-    @GetMapping("/user/{userId}/income")
-    public ResponseEntity<List<CategoryResponse>> getIncomeCategories(@PathVariable Long userId) {
-        List<CategoryResponse> categories = categoryService.getIncomeCategoriesByUser(userId);
+    /**
+     * Get income categories for the authenticated user
+     */
+    @GetMapping("/income")
+    public ResponseEntity<List<CategoryResponse>> getIncomeCategories(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        List<CategoryResponse> categories = categoryService.getIncomeCategoriesByUser(userDetails.getId());
         return ResponseEntity.ok(categories);
     }
 
-    // Get user-created categories only (excluding system defaults)
-    @GetMapping("/user/{userId}/custom")
-    public ResponseEntity<List<CategoryResponse>> getUserCreatedCategories(@PathVariable Long userId) {
-        List<CategoryResponse> categories = categoryService.getUserCreatedCategories(userId);
+    /**
+     * Get user-created categories only (excluding system defaults) for the authenticated user
+     */
+    @GetMapping("/custom")
+    public ResponseEntity<List<CategoryResponse>> getUserCreatedCategories(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        List<CategoryResponse> categories = categoryService.getUserCreatedCategories(userDetails.getId());
         return ResponseEntity.ok(categories);
     }
 
@@ -97,12 +166,14 @@ public class CategoryController {
         return ResponseEntity.ok(categories);
     }
 
-    // Search categories by name
-    @GetMapping("/user/{userId}/search")
+    /**
+     * Search categories by name for the authenticated user
+     */
+    @GetMapping("/search")
     public ResponseEntity<List<CategoryResponse>> searchCategories(
-            @PathVariable Long userId,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam String query) {
-        List<CategoryResponse> categories = categoryService.searchCategoriesByName(userId, query);
+        List<CategoryResponse> categories = categoryService.searchCategoriesByName(userDetails.getId(), query);
         return ResponseEntity.ok(categories);
     }
 }

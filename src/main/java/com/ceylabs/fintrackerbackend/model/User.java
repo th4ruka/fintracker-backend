@@ -15,6 +15,10 @@ public class User {
     private String name;
     private String email;
     private LocalDate dob;
+    @Column(nullable = false)
+    private String password;
+    @Column(nullable = false)
+    private String roles = "USER";
     @Transient //not stored in db
     private int age;
 
@@ -68,6 +72,22 @@ public class User {
 
     public void setDob(LocalDate dob) {
         this.dob = dob;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getRoles() {
+        return roles;
+    }
+
+    public void setRoles(String roles) {
+        this.roles = roles;
     }
 
     public int getAge() {
