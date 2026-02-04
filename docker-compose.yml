@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: fintracker-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: fin_tracker
+      MYSQL_USER: fintracker
+      MYSQL_PASSWORD: ${DB_PASSWORD:-changeme}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - fintracker-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Spring Boot Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fintracker-app
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      # Database configuration
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: fin_tracker
+      DB_USERNAME: fintracker
+      DB_PASSWORD: ${DB_PASSWORD:-changeme}
+
+      # Application configuration
+      APP_DEFAULT_CURRENCY: ${APP_DEFAULT_CURRENCY:-LKR}
+      SPRING_PROFILES_ACTIVE: prod
+
+      # JVM options (adjust for available RAM)
+      JAVA_OPTS: "-Xmx512m -Xms256m -XX:+UseG1GC"
+    ports:
+      - "8080:8080"
+    networks:
+      - fintracker-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    # Resource limits (uncomment and adjust as needed)
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '1.0'
+    #       memory: 768M
+    #     reservations:
+    #       cpus: '0.5'
+    #       memory: 512M
+
+  # Nginx Reverse Proxy (optional)
+  nginx:
+    image: nginx:alpine
+    container_name: fintracker-nginx
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deployment/nginx-docker.conf:/etc/nginx/conf.d/default.conf:ro
+      # Uncomment for SSL certificates
+      # - ./ssl/certs:/etc/nginx/ssl:ro
+    networks:
+      - fintracker-network
+    # Uncomment this service if you want Nginx reverse proxy
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  fintracker-network:
+    driver: bridge

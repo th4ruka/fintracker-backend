@@ -2,9 +2,34 @@
 
 This directory contains all necessary configuration files for deploying the Fin-Tracker Backend to Oracle Cloud Free Tier or any Ubuntu server.
 
+## Deployment Guides
+
+### Main Guides (Root Directory)
+
+1. **`DEPLOYMENT_COMPARISON.md`** - START HERE!
+   - Comprehensive comparison: JAR vs Docker vs Kubernetes
+   - Decision tree to choose the right method
+   - Resource usage and performance benchmarks
+   - Recommendations based on your resources
+
+2. **`ORACLE_CLOUD_DEPLOYMENT.md`** - JAR Deployment Guide
+   - Complete guide for Oracle Cloud Free Tier
+   - Direct JAR deployment with systemd
+   - Best for 1GB RAM instances
+   - Recommended for beginners
+
+3. **`DOCKER_DEPLOYMENT.md`** - Docker Deployment Guide
+   - Docker and Docker Compose setup
+   - Container-based deployment
+   - Best for 2GB+ RAM instances
+   - Portable across platforms
+
 ## Files in this Directory
 
-### 1. `ORACLE_CLOUD_DEPLOYMENT.md` (Root Directory)
+### 1. `README.md` (This File)
+Quick reference for all deployment configurations and commands.
+
+### 2. `ORACLE_CLOUD_DEPLOYMENT.md` (Root Directory)
 Complete step-by-step guide for deploying to Oracle Cloud Free Tier.
 
 **Location:** `/ORACLE_CLOUD_DEPLOYMENT.md` (in project root)
