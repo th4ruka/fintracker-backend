@@ -52,7 +52,7 @@ public class AuthService {
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setDob(request.getDob());
+        user.setDob(request.getdateOfBirth());
         user.setRoles("USER");
 
         User savedUser = userRepository.save(user);

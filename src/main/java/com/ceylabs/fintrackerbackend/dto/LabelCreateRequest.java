@@ -4,7 +4,7 @@ import jakarta.validation.constraints.*;
 
 public class LabelCreateRequest {
 
-    @NotNull(message = "User ID is required")
+//    @NotNull(message = "User ID is required")
     private Long userId;
 
     @NotBlank(message = "Label name is required")

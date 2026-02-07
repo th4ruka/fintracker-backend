@@ -15,7 +15,7 @@ public class AccountCreateRequest {
     @NotNull(message = "Initial balance is required")
     private BigDecimal initialAmount;
 
-    @NotNull(message = "User ID is required")
+//    @NotNull(message = "User ID is required")
     private Long userId;
 
     @Pattern(regexp = "^#[0-9A-Fa-f]{6}$", message = "Invalid hex color")

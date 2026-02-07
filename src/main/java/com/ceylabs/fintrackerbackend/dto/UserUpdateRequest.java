@@ -12,7 +12,7 @@ public class UserUpdateRequest {
     @Email(message = "Email must be valid")
     private String email;
 
-    private LocalDate dob;
+    private LocalDate dateOfBirth;
 
     public String getName() {
         return name;
@@ -30,11 +30,11 @@ public class UserUpdateRequest {
         this.email = email;
     }
 
-    public LocalDate getDob() {
-        return dob;
+    public LocalDate getdateOfBirth() {
+        return dateOfBirth;
     }
 
-    public void setDob(LocalDate dob) {
-        this.dob = dob;
+    public void setdateOfBirth(LocalDate dob) {
+        this.dateOfBirth = dob;
     }
 }

@@ -91,8 +91,8 @@ public class UserService {
             existingUser.setEmail(request.getEmail());
         }
 
-        if(request.getDob() != null) {
-            existingUser.setDob(request.getDob());
+        if(request.getdateOfBirth() != null) {
+            existingUser.setDob(request.getdateOfBirth());
         }
 
         User savedUser = userRepository.save(existingUser);

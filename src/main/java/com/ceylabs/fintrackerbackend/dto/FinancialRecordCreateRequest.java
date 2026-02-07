@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class FinancialRecordCreateRequest {
 
-    @NotNull(message = "User ID is required")
+//    @NotNull(message = "User ID is required")
     private Long userId;
 
     @NotNull(message = "Account ID is required")
