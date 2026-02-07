@@ -21,7 +21,7 @@ public class RegisterRequest {
     private String password;
 
     @NotNull(message = "Date of birth is required")
-    private LocalDate dob;
+    private LocalDate dateOfBirth;
 
     public RegisterRequest() {
     }
@@ -30,7 +30,7 @@ public class RegisterRequest {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.dob = dob;
+        this.dateOfBirth = dob;
     }
 
     public String getName() {
@@ -57,11 +57,11 @@ public class RegisterRequest {
         this.password = password;
     }
 
-    public LocalDate getDob() {
-        return dob;
+    public LocalDate getdateOfBirth() {
+        return dateOfBirth;
     }
 
-    public void setDob(LocalDate dob) {
-        this.dob = dob;
+    public void setdateOfBirth(LocalDate dob) {
+        this.dateOfBirth = dob;
     }
 }

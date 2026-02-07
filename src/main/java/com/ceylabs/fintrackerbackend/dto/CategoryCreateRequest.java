@@ -5,7 +5,7 @@ import jakarta.validation.constraints.*;
 
 public class CategoryCreateRequest {
 
-    @NotNull(message = "User ID is required")
+//    @NotNull(message = "User ID is required")
     private Long userId;
 
     @NotBlank(message = "Category name is required")
