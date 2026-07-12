@@ -30,11 +30,11 @@ public class UserUpdateRequest {
         this.email = email;
     }
 
-    public LocalDate getdateOfBirth() {
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setdateOfBirth(LocalDate dob) {
-        this.dateOfBirth = dob;
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 }

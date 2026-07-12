@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -29,6 +30,9 @@ class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private UserService userService;
@@ -137,6 +141,7 @@ class UserServiceTest {
 
         when(userRepository.findUserByEmail(createRequest.getEmail())).thenReturn(Optional.empty());
         when(userRepository.save(any(User.class))).thenReturn(newUser);
+        when(passwordEncoder.encode(anyString())).thenReturn("encoded-password");
 
         // When
         UserResponse result = userService.createUser(createRequest);
@@ -178,6 +183,7 @@ class UserServiceTest {
 
         when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.empty());
         when(userRepository.save(any(User.class))).thenReturn(newUser);
+        when(passwordEncoder.encode(anyString())).thenReturn("encoded-password");
 
         // When
         UserResponse result = userService.createUser(createRequest);
@@ -227,7 +233,7 @@ class UserServiceTest {
         // Given
         updateRequest.setName("John Updated");
         updateRequest.setEmail(null);
-        updateRequest.setDob(null);
+        updateRequest.setDateOfBirth(null);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
         when(userRepository.save(any(User.class))).thenReturn(testUser);
@@ -248,7 +254,7 @@ class UserServiceTest {
         // Given
         updateRequest.setName(null);
         updateRequest.setEmail("newemail@example.com");
-        updateRequest.setDob(null);
+        updateRequest.setDateOfBirth(null);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
         when(userRepository.findUserByEmail("newemail@example.com")).thenReturn(Optional.empty());
@@ -313,7 +319,7 @@ class UserServiceTest {
     void updateUser_WithNewDob_ShouldUpdateDob() {
         // Given
         LocalDate newDob = LocalDate.of(1992, 12, 25);
-        updateRequest.setDob(newDob);
+        updateRequest.setDateOfBirth(newDob);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
         when(userRepository.save(any(User.class))).thenReturn(testUser);
@@ -353,7 +359,7 @@ class UserServiceTest {
 
         updateRequest.setName(null);
         updateRequest.setEmail(null);
-        updateRequest.setDob(null);
+        updateRequest.setDateOfBirth(null);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
         when(userRepository.save(any(User.class))).thenReturn(testUser);
