@@ -160,7 +160,7 @@ public class CategoryService {
     public CategoryResponse mapToResponse(Category category) {
         CategoryResponse response = new CategoryResponse();
         response.setId(category.getId());
-        response.setUserId(category.getUser().getId());
+        response.setUserId(category.getUser() != null ? category.getUser().getId() : null);
         response.setName(category.getName());
         response.setCategoryType(category.getCategoryType());
         response.setColor(category.getColor());
